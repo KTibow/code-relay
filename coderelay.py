@@ -155,7 +155,8 @@ def start_project(project_name):
 
     spinner.finish()
     spinner.active = False
-    click.echo(f"Project {project_name} downloaded to {project_path}.")
+    click.echo(f"✅ Project {project_name} downloaded to {project_path}.")
+    click.echo("")
     click.echo(f"Remember, have fun in your 15 minutes! 😀")
     click.echo(f"Once you're done, run `coderelay publish-changes {project_name}`.")
     if click.prompt("Do you want to open the project now (y/n)", type=bool):
@@ -215,7 +216,7 @@ def publish_changes(project_name):
     subprocess.call(["git", "commit", "-m", "Code Relay", "-m", project_config["task"]["desc"]])
     subprocess.call(["git", "push", "fork"])
 
-    click.echo("Your code has been uploaded.")
+    click.echo("✅ Your code has been uploaded.")
     click.echo("Now, you need to tell code-relay that you're done.")
     click.echo("Go to the link below, and click 'Create pull request' twice.")
     click.echo(f"{project_config['git']}/compare/main...{project_remote_url.split('/')[3]}:main")
