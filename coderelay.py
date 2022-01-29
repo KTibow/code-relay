@@ -157,6 +157,7 @@ def start_project(project_name):
     spinner.active = False
     click.echo(f"Project {project_name} downloaded to {project_path}.")
     click.echo(f"Remember, have fun in your 15 minutes! 😀")
+    click.echo(f"Once you're done, run `coderelay publish-changes {project_name}`.")
     if click.prompt("Do you want to open the project now (y/n)", type=bool):
         cross_platform_open_file(project_path)
 
@@ -165,7 +166,7 @@ def start_project(project_name):
 @click.argument("project_name")
 def publish_changes(project_name):
     """
-    Publish changes to the project.
+    Publish changes to a project.
     """
     project_path = user_documents_dir() + "/code-relay/" + project_name
     if not os.path.exists(project_path):
@@ -183,14 +184,12 @@ def publish_changes(project_name):
 
     click.secho(f"What is a fork?", bold=True)
     click.echo(
-        "Given that only the authors of the project can publish changes, you will need to fork the project first."
+        "Only the authors of the project can publish changes, so you need to fork the project first."
     )
-    click.echo("This will create a copy of the GitHub repository that you own.")
-    click.echo("Then, you can publish your changes to the copy.")
-    click.echo("")
     click.secho(f"How do you fork?", bold=True)
     click.echo(f"To fork the project, first open it online at {project_config['git']}.")
     click.echo("Then, click the 'Fork' button.")
+    click.echo("coderelay will publish your changes to your fork.")
     click.echo("")
     project_remote_url = click.prompt(
         "What is the URL of your fork (example: https://github.com/username/project-name)"
@@ -217,3 +216,6 @@ def publish_changes(project_name):
     subprocess.call(["git", "push", "fork"])
 
     click.echo("Your code has been uploaded.")
+    click.echo("Now, you need to tell code-relay that you're done.")
+    click.echo("Go to the link below, and click 'Create pull request' twice.")
+    click.echo(f"{project_config['git']}/compare/main...{project_remote_url.split('/')[3]}:main")
