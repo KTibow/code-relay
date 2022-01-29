@@ -1,18 +1,36 @@
 [
     {
+        "name": "code-relay",
+        "git": "https://github.com/KTibow/code-relay",
+        "desc": "A tool to recommend repos to work on based on the code relay philosophy (that you're using right now).",
+        "languages": ["python"],
+        "frameworks": ["click"],
+        "task": {
+            "desc": "Make the code more concise/readable.",
+            "file": "coderelay.py"
+        },
+        "setup": {
+            "setup": "source venv/bin/activate",
+            "installation": "python -m pip install -r dev-requirements.txt",
+            "build": "pip3 install --upgrade --editable .",
+            "use": "coderelay --help"
+        }
+    },
+    {
         "name": "SBQuery",
         "git": "https://github.com/KTibow/SBQuery",
         "desc": "A GraphQL frontend and backend for data about the game Hypixel Skyblock.",
         "languages": ["python", "html", "javascript", "css"],
         "frameworks": ["sanic", "graphql", "graphene", "tailwindcss"],
         "task": {
-            "desc": "Make the code more concise.",
+            "desc": "Make the code more concise/readable.",
             "file": "server/schema.py"
         },
         "setup": {
             "installation": "python -m pip install -r requirements.txt requests",
             "build": "./format.sh",
-            "serve": "python server/server.py"
+            "serve": "python server/server.py",
+            "use": "http://localhost:8000"
         }
     }
 ]

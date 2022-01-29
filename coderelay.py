@@ -43,7 +43,6 @@ def user_prefs():
     """
     Configure what projects you want to see.
     """
-
     config_path = user_config_dir() + "/coderelay/coderelay.json"
     if not os.path.exists(config_path):
         # Create the config file
@@ -157,5 +156,64 @@ def start_project(project_name):
     spinner.finish()
     spinner.active = False
     click.echo(f"Project {project_name} downloaded to {project_path}.")
+    click.echo(f"Remember, have fun in your 15 minutes! 😀")
     if click.prompt("Do you want to open the project now (y/n)", type=bool):
         cross_platform_open_file(project_path)
+
+
+@cli.command(group="Project")
+@click.argument("project_name")
+def publish_changes(project_name):
+    """
+    Publish changes to the project.
+    """
+    project_path = user_documents_dir() + "/code-relay/" + project_name
+    if not os.path.exists(project_path):
+        click.echo(f"Could not find project {project_name}.")
+        return
+    if not shutil.which("git"):
+        click.echo("Please install git first.")
+        return
+    project_config_path = project_path + "/coderelay.json"
+    if not os.path.exists(project_config_path):
+        click.echo("Could not find project config.")
+        return
+    with open(project_config_path, "r") as project_config_file:
+        project_config = ujson.load(project_config_file)
+
+    click.secho(f"What is a fork?", bold=True)
+    click.echo(
+        "Given that only the authors of the project can publish changes, you will need to fork the project first."
+    )
+    click.echo("This will create a copy of the GitHub repository that you own.")
+    click.echo("Then, you can publish your changes to the copy.")
+    click.echo("")
+    click.secho(f"How do you fork?", bold=True)
+    click.echo(f"To fork the project, first open it online at {project_config['git']}.")
+    click.echo("Then, click the 'Fork' button.")
+    click.echo("")
+    project_remote_url = click.prompt(
+        "What is the URL of your fork (example: https://github.com/username/project-name)"
+    )
+
+    os.chdir(project_path)
+    subprocess.call(
+        ["git", "remote", "add", "fork", project_remote_url],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.call(["git", "remote", "set-url", "fork", project_remote_url])
+    subprocess.call(["git", "add", "."])
+
+    click.secho(f"Files changed:", bold=True)
+    subprocess.call(["git", "diff", "--staged", "--name-only"])
+    if not click.prompt("Do these changes look correct? (y/n)", type=bool):
+        click.echo("Aborting.")
+        return
+
+    click.echo("⏳ Uploading your code...")
+
+    subprocess.call(["git", "commit", "-m", "Code Relay", "-m", project_config["task"]["desc"]])
+    subprocess.call(["git", "push", "fork"])
+
+    click.echo("Your code has been uploaded.")
